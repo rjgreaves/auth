@@ -2,10 +2,10 @@
  * Created by reube on 13/07/2017.
  */
 
+const Authentication = require('./controllers/authentication');
+
 module.exports = function(app) {
 
-    app.get('/', function(req, res, next) {
-        res.send(['paper', 'rock', 'scissors']);
-    });
+    app.post('/signup', Authentication.signup);
 
 };
