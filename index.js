@@ -7,6 +7,7 @@ const http = require('http');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const router = require('./router');
+const cors = require('cors');
 
 require('./database');
 
@@ -16,7 +17,7 @@ const app = express();
 // Morgan is a logging framework
 app.use(morgan('combined'));
 app.use(bodyParser.json({ type: '*/*' }));
-
+app.use(cors());
 router(app);
 
 // Server setup

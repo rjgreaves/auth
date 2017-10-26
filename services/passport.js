@@ -43,6 +43,7 @@ const jwtLogin = new JwtStrategy(jwpOptions, function(payload, done) {
     // See if the user ID in the payload exists in our db,
     // if it does call done with user
     // if not call done without a user object
+    console.log('Checking User...');
     User.findById(payload.sub, function(err, user) {
         if(err) { return done(err, false); }
 
