@@ -1,24 +1,28 @@
 const mongoose = require('mongoose');
+const logger = require('./logger');
+
+const User = require('./models/user');
 
 const uri = 'mongodb://127.0.0.1/auth';
-console.log('Got Uri...');
+logger.info('Got Uri...');
 
 mongoose.Promise = require('bluebird');
+mongoose.set('debug', true);
 
-console.log('Created db...');
+logger.info('Created db...');
 
-mongoose.connect(uri);
+//mongoose.connect(uri);
 
-var promise = mongoose.createConnection(uri, {
+var promise = mongoose.connect(uri, {
     useMongoClient: true,
     /* other options */
 });
 promise.then(function(db) {
 /* Use `db`, for instance `db.model()`
  */
-    console.log('connected to ', uri);
+    logger.info(`connected to ${uri}`);
  });
 
 mongoose.connection.on('error', function(err) {
-    console.error('MongoDB error: %s', err);
+    logger.error('MongoDB error: %s', err);
 });

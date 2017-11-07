@@ -6,7 +6,9 @@ const User = require('../models/user');
 const config = require('../config');
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-const LocalStrategry = require('passport-local');
+const LocalStrategry = require('passport-local').Strategy;
+
+const logger = require('../logger');
 
 // Create local strategry
 const localOptions = {
@@ -14,20 +16,40 @@ const localOptions = {
 };
 
 const localLogin = new LocalStrategry(localOptions, function(email, password, done) {
+    logger.info(`Locating user ${email}`);
     // Verify email and password, call done with user if correct
     // otherwise call done with false
-    User.findOne({ email: email }, function(err, user) {
-        if(err) { return done(err); }
-        if(!user) { return done(null, false); }
+    try{
+      return User.findOne({ email }, function(err, user) {
+          if(err) {
+              logger.error(err);
+              return done(err);
+          }
+          if(!user) { 
+            logger.debug(`User not found ${email}`);
+            return done(null, false, { message: 'Incorrect Credentials' }); 
+          }
 
-        // compare password - is 'password' equal to user.password?
-        user.comparePassword(password, function(err, isMatch) {
-           if (err) { return done(err); }
-           if(!isMatch) { return done(null, false); }
+          logger.debug(`Checking password for ${email}`);
 
-           return done(null, user);
-        });
-    });
+          // compare password - is 'password' equal to user.password?
+          user.comparePassword(password, function(err, isMatch) {
+            if (err) {
+              logger.error(err);
+              return done(err);
+            }
+            if(!isMatch) { 
+              return done(null, false, { message: 'Incorrect Credentials' });
+            }
+            logger.info(`Returning user ${email}`);
+            return done(null, user);
+          });
+      });
+    }
+    catch(err) {
+      logger.error(err);
+      throw err;
+    }
 });
 
 // Set options for JWT strategy

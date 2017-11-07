@@ -26,12 +26,13 @@ module.exports = function(app) {
     
       app.use(bodyParser.json());
       app.use(bodyParser.urlencoded({ extended: true }));
+      app.use(passport.initialize());
     
     
     app.get('/', requireAuth, function(req, res) {
         res.send({ message: 'Super secret code is abc123'});
     });
-    app.post('/signin', requireSignIn, Authentication.signIn);
+    app.post('/signin', Authentication.signIn);
     app.post('/signup', Authentication.signup);
 
 };

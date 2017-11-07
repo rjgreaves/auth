@@ -22,6 +22,12 @@
     "nodemon": "^1.11.0",
     "passport": "^0.3.2",
     "passport-jwt": "^2.2.1",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "winston": "next"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-preset-env": "^1.6.1"
   }
 }
