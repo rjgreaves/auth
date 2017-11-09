@@ -20,8 +20,28 @@ function tokenForUser(user) {
     );
 }
 
-exports.signup = function(req, res, next) {
+exports.createAdmin = async function() {
+    try{
 
+        const email =  'admin@auth.com';
+        let user = await User.findOne({email}).exec();
+
+        if (!user) {
+
+            logger.info('Creating admin user');
+            user = new User({
+                email: email,
+                password: 'choc$fudge5cake'
+            });
+
+            await user.save().exec();
+        }
+    } catch (err) {
+        logger.error(err);
+    }
+}
+
+exports.signup = function(req, res, next) {
     const email = req.body.email;
     const password = req.body.password;
 
@@ -64,31 +84,33 @@ exports.signup = function(req, res, next) {
         });
 
     });
-
 };
 
-exports.signIn = (req, res) => {
+exports.signIn = async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
   logger.info(`Locating user ${email}`);
 
-  User.findOne({ email }, (err, user) => {
-    if (!user) {
+  const user = await User.findOne({ email }).exec();
+
+  if (!user) {
       logger.debug(`User not found ${email}`);
       return res.status(422).send({ errorMessage: 'Incorrect Email Address' });
+  }
+
+  logger.debug(`Checking password for ${email}`);
+
+  user.comparePassword(password, (err, isMatch) => {
+    if (err) {
+      logger.error(err);
+      return res.status(500);
     }
-
-    logger.debug(`Checking password for ${email}`);
-
-    user.comparePassword(password, isMatch => {
-        if (!isMatch) {
-        return res.status(422).send({ errorMessage: 'Incorrect Password' });
-        }
-
-        logger.info(`Returning user ${email}`);
-        return res.send({ token: tokenForUser(user) });
-    });
-
+    if (!isMatch) {
+      return res.status(422).send({ errorMessage: 'Incorrect Password' });
+    }
+    logger.info(`Returning user ${email}`);
+    return res.send({ token: tokenForUser(user) });
   });
+
 };

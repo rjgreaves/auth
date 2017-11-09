@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const logger = require('./logger');
 
-const User = require('./models/user');
+const authController = require('./controllers/authentication');
 
 const uri = 'mongodb://127.0.0.1/auth';
 logger.info('Got Uri...');
@@ -21,6 +21,9 @@ promise.then(function(db) {
 /* Use `db`, for instance `db.model()`
  */
     logger.info(`connected to ${uri}`);
+
+    authController.createAdmin();
+
  });
 
 mongoose.connection.on('error', function(err) {
