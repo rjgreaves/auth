@@ -10,6 +10,8 @@ const bodyParser = require('body-parser');
 const requireAuth = passport.authenticate('jwt', { session: false });
 const requireSignIn = passport.authenticate('local', { session: false });
 
+const newlsetterApi = require('./api/newsletters');
+
 module.exports = function(app) {
 
     app.use((req, res, next) => {
@@ -34,5 +36,7 @@ module.exports = function(app) {
     });
     app.post('/signin', Authentication.signIn);
     app.post('/signup', Authentication.signup);
+
+    newlsetterApi(app, requireAuth);
 
 };
